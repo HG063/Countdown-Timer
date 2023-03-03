@@ -91,6 +91,20 @@ input {
   background-color: orangered;
 }
 
+.start2 {
+  display: none;
+}
+
+.start3 {
+  display: initial;
+  background-color: green;
+}
+
+.stop2 {
+  display: initial;
+  background-color: orange;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
