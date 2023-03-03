@@ -1,33 +1,40 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 
 function App() {
   const [hour, setHour] = useState("");
   const [minute, setMinute] = useState("");
   const [sec, setSecond] = useState("");
-  const [countdownTimer, setCountdownTimer] = useState("");
   const [startStyle, setStartStyle] = useState("btn start");
   const [stopStyle, setStopStyle] = useState("btn stop");
   const [startDisplay, setStartDisplay] = useState("Start");
+  const [startTimer, setStartTimer] = useState(false);
   const maxLength = "2";
+  const countdownTimer = useRef(null);
 
   const start = () => {
-    if (hour == 0 && minute == 0 && sec == 0) {
+    if (
+      (hour === "" ? "00" : hour) === "00" &&
+      (minute === "" ? "00" : minute) === "00" &&
+      (sec === "" ? "00" : sec) === "00"
+    ) {
       return;
     }
     setStartStyle("btn start2");
     setStopStyle("btn stop2");
-    startTimer();
   };
 
-  const startTimer = () => {
-    setCountdownTimer(
-      setInterval(() => {
+  useEffect(() => {
+    if (startTimer) {
+      countdownTimer.current = setInterval(() => {
         timer();
-      }, 1000)
-    );
-  };
+      }, 1000);
+
+      return () => {
+        clearInterval(countdownTimer.current);
+      };
+    }
+  });
 
   const stop = () => {
     stopTimer("pause");
@@ -37,7 +44,8 @@ function App() {
     setStartDisplay(value === "pause" ? "Continue" : "Start");
     setStartStyle("btn start3");
     setStopStyle("btn stop");
-    clearInterval(countdownTimer);
+    clearInterval(countdownTimer.current);
+    setStartTimer(false);
   };
 
   const reset = () => {
@@ -45,10 +53,10 @@ function App() {
     setMinute("");
     setSecond("");
     stopTimer();
+    setStartTimer(false);
   };
 
   const timer = () => {
-    // Formatting the time - START
     if (parseInt(sec === "" ? "00" : sec) > 60) {
       setMinute((parseInt(minute === "" ? "00" : minute) + 1).toString());
       setSecond((parseInt(sec === "" ? "00" : sec) - 59).toString());
@@ -58,10 +66,12 @@ function App() {
       setMinute((parseInt(minute === "" ? "00" : minute) - 60).toString());
     }
     setMinute(parseInt(minute === "" ? "00" : minute) > 60 ? "60" : minute);
-    // Formatting the time - END
 
-    // Updating the Time - START
-    if (hour == 0 && minute == 0 && sec == 0) {
+    if (
+      (hour === "" ? "00" : hour) === "00" &&
+      (minute === "" ? "00" : minute) === "00" &&
+      (sec === "" ? "00" : sec) === "00"
+    ) {
       setHour("");
       setMinute("");
       setSecond("");
@@ -72,14 +82,20 @@ function App() {
           parseInt(sec === "" ? "00" : sec) - 1
         }`
       );
-    } else if (parseInt(minute === "" ? "00" : minute) !== 0 && sec == 0) {
+    } else if (
+      parseInt(minute === "" ? "00" : minute) !== 0 &&
+      (sec === "" ? "00" : sec) === "00"
+    ) {
       setSecond(59);
       setMinute(
         `${parseInt(minute === "" ? "00" : minute) <= 10 ? "0" : ""}${
           parseInt(minute === "" ? "00" : minute) - 1
         }`
       );
-    } else if (parseInt(hour === "" ? "00" : hour) !== 0 && minute == 0) {
+    } else if (
+      parseInt(hour === "" ? "00" : hour) !== 0 &&
+      (minute === "" ? "00" : minute) === "00"
+    ) {
       setMinute(60);
       setHour(
         `${parseInt(hour === "" ? "00" : hour) <= 10 ? "0" : ""}${
@@ -88,7 +104,6 @@ function App() {
       );
     }
     return;
-    // Updating the Time - END
   };
 
   return (
@@ -128,7 +143,12 @@ function App() {
       </div>
 
       <div className="container__btns">
-        <button className={startStyle} onClick={start}>
+        <button
+          className={startStyle}
+          onClick={() => {
+            start();
+            setStartTimer(true);
+          }}>
           {startDisplay}
         </button>
         <button className={stopStyle} onClick={stop}>
