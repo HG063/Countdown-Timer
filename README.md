@@ -1,6 +1,6 @@
 # Countdown-Timer
 
-## Live Link :- hg063.github.io/Countdown-Timer/
+## Live Link :- https://hg063.github.io/Countdown-Timer/
 
 A Countdown Timer built with React.js
 
